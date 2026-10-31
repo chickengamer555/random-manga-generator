@@ -77,7 +77,7 @@
       </fieldset>
 
       <label class="check"><input type="checkbox" id="adult"> Include 18+ titles</label>
-      <label class="check"><input type="checkbox" id="panels" checked> Load panels from MangaDex</label>
+      <label class="check" id="panels-option" hidden><input type="checkbox" id="panels" checked> Load panels from MangaDex</label>
 
       <button type="button" id="reset" class="ghost">Reset filters</button>
     </aside>
@@ -135,7 +135,7 @@
   </main>
 
   <footer class="credits">
-    <p>Data from <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a>, panels from <a href="https://mangadex.org" target="_blank" rel="noopener">MangaDex</a>.</p>
+    <p>Data from <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a><span id="panels-credit" hidden>, panels from <a href="https://mangadex.org" target="_blank" rel="noopener">MangaDex</a></span>.</p>
   </footer>
 
   <dialog id="lightbox">

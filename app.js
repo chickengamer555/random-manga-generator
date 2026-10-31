@@ -522,6 +522,8 @@ function renderMedia(media) {
   if (media.idMal) {
     links.push(el('a', { href: `https://myanimelist.net/manga/${media.idMal}`, target: '_blank', rel: 'noopener' }, 'MyAnimeList'));
   }
+  const mangadexSearch = `https://mangadex.org/search?q=${encodeURIComponent(media.title.romaji || title)}`;
+  links.push(el('a', { href: mangadexSearch, target: '_blank', rel: 'noopener' }, 'Find on MangaDex'));
   $('links').replaceChildren(...links);
   $('sfx').textContent = SFX[randInt(0, SFX.length - 1)];
   $('empty').hidden = true;
@@ -585,7 +587,7 @@ async function show(media, english) {
   else $('english').hidden = true;
   addToHistory(media);
   window.scrollTo({ top: $('result').getBoundingClientRect().top + window.scrollY - 16, behavior: 'smooth' });
-  if ($('panels').checked) loadPanels(media, token);
+  if (localServer && $('panels').checked) loadPanels(media, token); // MangaDex only answers browsers on localhost
   else $('panels-section').hidden = true;
 }
 
@@ -721,7 +723,7 @@ async function loadDisliked() {
     return;
   }
   localServer = true;
-  $('english-option').hidden = false;
+  for (const id of ['english-option', 'panels-option', 'panels-credit']) $(id).hidden = false;
   await loadReadList();
   const firstSync = !load('rmg.dislikedSynced', false);
   const savedIds = new Set(saved.map((d) => d.id));
