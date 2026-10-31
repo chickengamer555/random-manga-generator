@@ -1,6 +1,10 @@
 # Random Manga Generator
 
+**[Use the site](https://chickengamer555.github.io/random-manga-generator/)**
+
 Press a button, get a random manga with its cover and synopsis.
+
+![The Random Manga Generator page: a black title panel, a speed-line button and a filters panel, drawn like a manga page](screenshot.png)
 
 - Filter by status, origin, format, score, year and genre.
 - A manga won't repeat until you reload the page or press Start over.
