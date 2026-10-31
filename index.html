@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Random Manga Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Dela+Gothic+One&family=Noto+Sans+JP&family=Noto+Sans+KR&family=Noto+Sans+SC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="title-panel">
+      <h1>Random Manga Generator</h1>
+      <p class="tategaki" lang="ja" aria-hidden="true">今日の一冊</p>
+    </div>
+    <button type="button" id="roll" class="roll"><span class="roll-face"><span>Give me a manga</span></span></button>
+  </header>
+
+  <main class="layout">
+    <aside class="filters" id="filters">
+      <h2>Filters</h2>
+
+      <label>Status
+        <select id="status">
+          <option value="">Any</option>
+          <option value="FINISHED">Complete</option>
+          <option value="RELEASING">Ongoing</option>
+          <option value="HIATUS">On hiatus</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </label>
+
+      <label>Origin
+        <select id="country">
+          <option value="">Any</option>
+          <option value="JP">Japan (manga)</option>
+          <option value="KR">Korea (manhwa)</option>
+          <option value="CN">China (manhua)</option>
+        </select>
+      </label>
+
+      <label>Format
+        <select id="format">
+          <option value="">Manga + one-shots</option>
+          <option value="MANGA">Series only</option>
+          <option value="ONE_SHOT">One-shots only</option>
+        </select>
+      </label>
+
+      <label>Minimum score <output id="scoreOut">any</output>
+        <input type="range" id="minScore" min="0" max="90" step="5" value="0">
+      </label>
+
+      <div class="row">
+        <label>From year<input type="number" id="yearFrom" min="1900" max="2100" placeholder="any"></label>
+        <label>To year<input type="number" id="yearTo" min="1900" max="2100" placeholder="any"></label>
+      </div>
+
+      <fieldset>
+        <legend>Genres <small>click: include → exclude → off</small></legend>
+        <div id="genres" class="chips"><span class="muted">Loading…</span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Recommendations</legend>
+        <label class="check" id="english-option" hidden><input type="checkbox" id="englishOnly" checked> Only manga with an English translation</label>
+        <label class="check"><input type="checkbox" id="requireSynopsis" checked> Only manga with a synopsis</label>
+        <label>Skip ones similar to "Not for me" manga
+          <select id="similarity">
+            <option value="0">Off</option>
+            <option value="0.4">Light (only very similar)</option>
+            <option value="0.3" selected>Medium</option>
+            <option value="0.2">Strong (anything close)</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <label class="check"><input type="checkbox" id="adult"> Include 18+ titles</label>
+      <label class="check"><input type="checkbox" id="panels" checked> Load panels from MangaDex</label>
+
+      <button type="button" id="reset" class="ghost">Reset filters</button>
+    </aside>
+
+    <section class="stage">
+      <div class="caption">
+        <p>Never shown: <span id="read-part" hidden><b id="read-count"></b> you've read, </span><b id="dislike-count"></b> not for you. Seen this session: <b id="seen-count">0</b>.</p>
+        <button type="button" id="start-over" class="ghost">Start over</button>
+      </div>
+      <p id="status-msg" class="status-msg" role="status"></p>
+
+      <section id="empty" class="empty">
+        <h2>Nothing rolled yet</h2>
+        <p>Press the big button to get a random manga.</p>
+      </section>
+
+      <article id="result" class="result" hidden>
+        <div class="cover-wrap">
+          <img id="cover" alt="">
+          <span id="sfx" class="sfx" lang="ja" aria-hidden="true"></span>
+        </div>
+        <div class="info">
+          <h2 id="title"></h2>
+          <p id="alt-title" class="alt"></p>
+          <ul id="meta" class="meta"></ul>
+          <p id="english" class="english" hidden></p>
+          <ul id="genre-list" class="tags"></ul>
+          <div id="synopsis" class="synopsis"></div>
+          <p id="links" class="links"></p>
+          <div class="actions">
+            <button type="button" id="dislike" class="dislike">Not for me</button>
+            <button type="button" id="next" class="ghost">Next manga</button>
+            <button type="button" id="copy-title" class="ghost">Copy title (for Mihon search)</button>
+          </div>
+        </div>
+      </article>
+
+      <section id="panels-section" class="panels-section" hidden>
+        <h3 id="panels-title">Panels</h3>
+        <p id="panels-note" class="muted"></p>
+        <div id="panels-grid" class="panels-grid"></div>
+      </section>
+
+      <details id="disliked-section" class="history disliked" hidden>
+        <summary><h3>Not for me <span id="disliked-count"></span></h3></summary>
+        <p class="muted">These never come back, and neither does anything too similar. Click one to remove it.</p>
+        <div id="disliked" class="history-list"></div>
+      </details>
+
+      <section id="history-section" class="history" hidden>
+        <h3>Recently rolled</h3>
+        <div id="history" class="history-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="credits">
+    <p>Data from <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a>, panels from <a href="https://mangadex.org" target="_blank" rel="noopener">MangaDex</a>.</p>
+  </footer>
+
+  <dialog id="lightbox">
+    <img id="lightbox-img" alt="">
+    <div class="lb-controls">
+      <button type="button" id="lb-prev">Previous</button>
+      <span id="lb-count"></span>
+      <button type="button" id="lb-next">Next</button>
+      <button type="button" id="lb-close">Close</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
